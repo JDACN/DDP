@@ -6,6 +6,7 @@
 #
 
 library(shiny)
+library(ggplot2)
 
 shinyServer(function(input, output) {
 
@@ -14,10 +15,41 @@ shinyServer(function(input, output) {
     # generate bins based on input$bins from ui.R
     x    <- faithful[, 2]
     bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
+    
+    
+    if (input$chartType == 'hist')
+    {      
     # draw the histogram with the specified number of bins
-    hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    p <- ggplot(mtcars, aes(x=mpg)) + geom_histogram(binwidth=2, colour="black", aes(y=..density.., fill=..count..))
+      if (input$stat == TRUE)
+      {
+           p <- p + stat_function(fun=dnorm,
+                                     color="red",
+                                     args=list(mean=mean(mtcars$mpg), 
+                                               sd=sd(mtcars$mpg)))
+      }
+    }
+    else
+    {
+      p <-qplot(factor(cyl), mpg, data = mtcars, geom = "boxplot")     
+    }
 
+    p
   })
+  
+  # Generate a summary of the dataset
+  output$summary <- renderPrint({
+                summary(mtcars)
+  })
+  
+  # Generate table
+  
+  output$table <- output$view <- renderTable({
+        head(mtcars , addrownumsmt = TRUE, n = input$obs )}, include.rownames=TRUE
+  )
+   
+  
+  # mtcars table info
+ output$tableInfo <-  renderText({"A data frame with 32 observations on 11 variables"})
 
 })
