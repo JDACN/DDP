@@ -7,20 +7,31 @@
 
 library(shiny)
 library(ggplot2)
+library(plotly)
 
 shinyServer(function(input, output) {
 
-  output$distPlot <- renderPlot({
+  output$distPlot <- renderPlotly({
 
-    # generate bins based on input$bins from ui.R
-    x    <- faithful[, 2]
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+      if (input$chartType == 'point')
+      {
+           p <- ggplot(data=mtcars , aes(x=disp, y=mpg, color=factor(cyl) )) +   geom_point() +
+                 labs( color = "Cylinders" )+
+                 xlab('Displacement (cu.in.)') +
+                 ylab('Miles/(US) gallon')
+           if (input$stat == TRUE)
+           {
+                 p <- p + geom_smooth(method = "lm") 
+           }
+      }
     
-    
-    if (input$chartType == 'hist')
+    else if (input$chartType == 'hist')
     {      
     # draw the histogram with the specified number of bins
-    p <- ggplot(mtcars, aes(x=mpg)) + geom_histogram(binwidth=2, colour="black", aes(y=..density.., fill=..count..))
+    p <- ggplot(mtcars, aes(x=mpg)) + 
+          geom_histogram(binwidth=2, colour="black", aes(y=..density.., fill=..count..))+
+          xlab('Miles/(US) gallon')
+      
       if (input$stat == TRUE)
       {
            p <- p + stat_function(fun=dnorm,
@@ -31,10 +42,24 @@ shinyServer(function(input, output) {
     }
     else
     {
-      p <-qplot(factor(cyl), mpg, data = mtcars, geom = "boxplot")     
+      p <-qplot(factor(cyl), mpg, data = mtcars, geom = "boxplot") +
+            ylab('Miles/(US) gallon') +
+            xlab('Cylinders')
+   
     }
 
-    p
+        # Theame managment
+        if (input$theame == 'bw'){
+              p <- p  + theme_bw()
+        }
+        else if (input$theame == 'dark'){
+              p <- p  + theme_dark()
+        }
+        else if (input$theame == 'line'){
+              p <- p  + theme_linedraw()
+        }
+        
+    ggplotly(p)
   })
   
   # Generate a summary of the dataset

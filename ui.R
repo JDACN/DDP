@@ -6,8 +6,10 @@
 #
 
 library(shiny)
+library(plotly)
 
 shinyUI(fluidPage(
+
 
   # css
       tags$head(
@@ -36,8 +38,7 @@ shinyUI(fluidPage(
 
   # Application title
 
-  headerPanel(
-        h1("Motor Trend Car Road Tests")),
+  headerPanel("Motor Trend Car Road Tests"),
 
   # Sidebar with a slider input for number of bins
   
@@ -50,13 +51,16 @@ shinyUI(fluidPage(
                       c("Box Plot" = "box",
                         "Scattered" = "point",
                         "Histograph" = "hist")),
-          checkboxInput("stat", "Show Linear Regression on scatter plot", FALSE),
-      sliderInput("bins",
-                  "Number of bins:",
-                  min = 1,
-                  max = 50,
-                  value = 30),
-     
+          checkboxInput("stat", "Show Linear Regression / Normal Distribution", FALSE),
+          
+          # Input: Select the Theame type ----
+          radioButtons("theame", "Theame type:",
+                       c("Normal" = "norm",
+                         "Black & White" = "bw",
+                         "Dark" = "dark",
+                         "linedraw" = "line")),
+          
+
       hr(),
       h4("Table Settings"),
       sliderInput("obs",
@@ -67,13 +71,16 @@ shinyUI(fluidPage(
       
      
     ),
+   
+  
 
     # Show a plot of the generated distribution
     mainPanel(
           tabsetPanel(
                 tabPanel("Plot",
                          br(),
-                         plotOutput("distPlot" )
+                         
+                         plotlyOutput("distPlot" , height = "100%")
                          ),
                 tabPanel("Table", tableOutput("table")),
                 tabPanel("Summary", 
@@ -87,6 +94,18 @@ shinyUI(fluidPage(
                                )
                              
                          )
+                         ),
+                tabPanel("About",
+                         div(class="header", checked=NA,
+                              br(),
+                              p( "This is Shiny application developed as part of Coursera Assignment: Course Project: Shiny Application and Reproducible Pitch" ),
+                              p( " Developed By : Jayant Dhawale"),
+                              p( " "),
+                             div(class="header", checked=NA,
+                                 p("Source code and other documentation avilable at", 
+                                   a(href="https://github.com/JDACN/DDP", "https://github.com/JDACN/DDP")
+                                 ))
+                             )
                          )
                
           )
