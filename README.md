@@ -21,9 +21,9 @@ The application must include the following:
 - You must also include enough documentation so that a novice user could use your application.
 - The documentation should be at the Shiny website itself. Do not post to an external link.
 
-## The Shiny App {.flexbox .vcenter}
+## The Shiny App
 
-<img src="help.png" width="100%" , height="100%">
+![](help.png)
 
 ## Help on Shiny App
 
